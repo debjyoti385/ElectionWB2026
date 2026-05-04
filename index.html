@@ -14,7 +14,7 @@
 <!-- Loading -->
 <div id="loading-screen">
   <div class="spinner"></div>
-  <div style="color:#64748b;font-size:.88rem;margin-top:4px">Loading election results…</div>
+  <div style="color:var(--muted);font-size:.88rem;margin-top:4px">Loading election results…</div>
 </div>
 
 <!-- Header -->
@@ -43,7 +43,7 @@
   </div>
   <div id="status-bar">
     <span id="status-msg"></span>
-    <span style="color:#334155">Source: results.eci.gov.in</span>
+    <span style="color:var(--muted)">Source: results.eci.gov.in</span>
   </div>
 </header>
 
@@ -145,7 +145,7 @@
       <div class="chart-wrap"><canvas id="vote-share-donut"></canvas></div>
     </div>
     <div class="chart-box">
-      <h3>All Party Vote Details <span id="total-votes-count" style="font-size:.75rem;color:#64748b;font-weight:400;margin-left:8px"></span></h3>
+      <h3>All Party Vote Details <span id="total-votes-count" style="font-size:.75rem;color:var(--muted);font-weight:400;margin-left:8px"></span></h3>
       <div style="overflow-y:auto;max-height:240px" id="vote-share-table"></div>
     </div>
   </div>
@@ -232,7 +232,7 @@
       <option value="progress">In Progress</option>
       <option value="pending">Pending</option>
     </select>
-    <span id="results-count" style="color:#475569;font-size:.8rem;white-space:nowrap"></span>
+    <span id="results-count" style="color:var(--muted);font-size:.8rem;white-space:nowrap"></span>
   </div>
   <div class="results-table-wrap">
     <table class="results-table">
@@ -248,7 +248,7 @@
         </tr>
       </thead>
       <tbody id="results-tbody">
-        <tr><td colspan="7" style="text-align:center;padding:32px;color:#475569">Loading…</td></tr>
+        <tr><td colspan="7" style="text-align:center;padding:32px;color:var(--muted)">Loading…</td></tr>
       </tbody>
     </table>
   </div>

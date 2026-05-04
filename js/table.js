@@ -106,7 +106,7 @@ window.ResultsTable = (() => {
     if (countEl) countEl.textContent = `${filtered.length} of ${currentData.length} constituencies`;
 
     if (filtered.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:32px;color:#64748b">No results match your filter</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--muted)">No results match your filter</td></tr>`;
       return;
     }
 

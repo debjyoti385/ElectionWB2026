@@ -351,7 +351,7 @@
       .sort((a,b)=>(b[1].votes||0)-(a[1].votes||0));
 
     el.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:.83rem">
-      <thead><tr style="color:#64748b;border-bottom:1px solid #334155;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em">
+      <thead><tr style="color:var(--muted);border-bottom:1px solid var(--border);font-size:.72rem;text-transform:uppercase;letter-spacing:.05em">
         <th style="padding:8px 10px;text-align:left">Party</th>
         <th style="padding:8px 10px;text-align:right">Votes</th>
         <th style="padding:8px 10px;text-align:right">Vote %</th>
@@ -363,20 +363,20 @@
       const color = COLORS[p]||'#9ca3af';
       const votePct = v.votePct || (tv>0?+(v.votes/tv*100).toFixed(2):0);
       const seatPct = v.total ? +(v.total/294*100).toFixed(1) : 0;
-      return `<tr style="border-bottom:1px solid #1e293b">
+      return `<tr style="border-bottom:1px solid var(--border)">
         <td style="padding:7px 10px">
           <span style="display:inline-flex;align-items:center;gap:6px">
             <span style="width:10px;height:10px;border-radius:2px;background:${color};display:inline-block"></span>
             <strong style="color:${color}">${p}</strong>
-            <span style="color:#64748b;font-size:.75rem">${v.fullName||''}</span>
+            <span style="color:var(--muted);font-size:.75rem">${v.fullName||''}</span>
           </span>
         </td>
-        <td style="padding:7px 10px;text-align:right;color:#e2e8f0">${v.votes?(v.votes).toLocaleString():'—'}</td>
+        <td style="padding:7px 10px;text-align:right;color:var(--text2)">${v.votes?(v.votes).toLocaleString():'—'}</td>
         <td style="padding:7px 10px;text-align:right;font-weight:600;color:${color}">${votePct?votePct.toFixed(2)+'%':'—'}</td>
-        <td style="padding:7px 10px;text-align:right;color:#e2e8f0">${v.total||0}</td>
-        <td style="padding:7px 10px;text-align:right;color:#94a3b8">${seatPct?seatPct+'%':'—'}</td>
+        <td style="padding:7px 10px;text-align:right;color:var(--text2)">${v.total||0}</td>
+        <td style="padding:7px 10px;text-align:right;color:var(--muted)">${seatPct?seatPct+'%':'—'}</td>
         <td style="padding:7px 10px;min-width:100px">
-          <div style="height:6px;background:#1e293b;border-radius:3px;overflow:hidden">
+          <div style="height:6px;background:var(--surface2);border-radius:3px;overflow:hidden">
             <div style="height:100%;width:${Math.min(votePct*1.5,100).toFixed(1)}%;background:${color};border-radius:3px"></div>
           </div>
         </td>
@@ -415,8 +415,8 @@
       <div class="margin-cat-card" style="border-top:3px solid ${cat.color}">
         <div style="font-size:1.5rem">${cat.icon}</div>
         <div style="font-size:1.6rem;font-weight:800;color:${cat.color}">${cat.seats}</div>
-        <div style="font-size:.8rem;font-weight:600;color:#e2e8f0">${cat.label}</div>
-        <div style="font-size:.72rem;color:#64748b">${cat.sub}</div>
+        <div style="font-size:.8rem;font-weight:600;color:var(--text2)">${cat.label}</div>
+        <div style="font-size:.72rem;color:var(--muted)">${cat.sub}</div>
       </div>`).join('');
   }
 
@@ -504,7 +504,7 @@ App.toggleTheme = function() {
 
 // Apply saved theme on load
 (function() {
-  const saved = localStorage.getItem('wb-theme') || 'dark';
+  const saved = localStorage.getItem('wb-theme') || 'light';
   document.documentElement.setAttribute('data-theme', saved);
   const icon = document.getElementById('theme-icon');
   if (icon) icon.textContent = saved === 'dark' ? '☀️' : '🌙';

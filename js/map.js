@@ -62,7 +62,7 @@ window.ElectionMap = (() => {
     if (placeholder) placeholder.style.display = 'none';
 
     if (!c) {
-      if (detailEl) detailEl.innerHTML = '<span style="color:#94a3b8">No data</span>';
+      if (detailEl) detailEl.innerHTML = '<span style="color:var(--muted)">No data</span>';
       return;
     }
 
@@ -77,16 +77,16 @@ window.ElectionMap = (() => {
           <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${partyColor};margin-right:6px;vertical-align:middle"></span>
           <strong style="color:${partyColor}">${partyLabel}</strong>
         </div>
-        <div><span style="color:#64748b">Leading:</span> ${c.leadCand || c.candidate || '—'}</div>
-        <div><span style="color:#64748b">Trailing:</span> ${c.trailCand || '—'}</div>
-        <div><span style="color:#64748b">Trailing Party:</span> ${c.trailParty || '—'}</div>
-        ${c.margin ? `<div><span style="color:#64748b">Margin:</span> <strong style="color:#a5b4fc">${c.margin.toLocaleString()}</strong></div>` : ''}
-        ${c.round ? `<div><span style="color:#64748b">Round:</span> ${c.round}</div>` : ''}
+        <div><span style="color:var(--muted)">Leading:</span> ${c.leadCand || c.candidate || '—'}</div>
+        <div><span style="color:var(--muted)">Trailing:</span> ${c.trailCand || '—'}</div>
+        <div><span style="color:var(--muted)">Trailing Party:</span> ${c.trailParty || '—'}</div>
+        ${c.margin ? `<div><span style="color:var(--muted)">Margin:</span> <strong style="color:var(--accent-text)">${c.margin.toLocaleString()}</strong></div>` : ''}
+        ${c.round ? `<div><span style="color:var(--muted)">Round:</span> ${c.round}</div>` : ''}
         <div style="margin-top:8px"><span class="status-badge ${statusClass}">${c.status || 'Pending'}</span></div>
         <div style="margin-top:8px">
           <a href="https://results.eci.gov.in/ResultAcGenMay2026/candidateswise-S25${String(acNo).padStart(3,'0')}.htm"
              target="_blank" rel="noopener"
-             style="font-size:.75rem;color:#818cf8">View ECI Results ↗</a>
+             style="font-size:.75rem;color:var(--accent2)">View ECI Results ↗</a>
         </div>
       `;
     }
