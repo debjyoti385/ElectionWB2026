@@ -8,9 +8,15 @@ window.ResultsTable = (() => {
   let searchQuery = '';
 
   const COLORS = {
-    BJP: '#f97316', AITC: '#3b82f6', 'CPI(M)': '#dc2626',
-    AJUP: '#7c3aed', AISF: '#059669', INC: '#0ea5e9',
+    BJP: '#f97316', AITC: '#22c55e', 'CPI(M)': '#dc2626',
+    AJUP: '#7c3aed', AISF: '#0284c7', INC: '#0ea5e9',
     BSP: '#d97706', IND: '#6b7280', OTH: '#9ca3af', '': '#475569'
+  };
+  const SYMBOLS_IMG = {
+    BJP:     './images/symbols/bjp.png',
+    AITC:    './images/symbols/aitc.png',
+    'CPI(M)':'./images/symbols/cpim.png',
+    INC:     './images/symbols/inc.png',
   };
 
   function init() {
@@ -37,7 +43,10 @@ window.ResultsTable = (() => {
 
   function update(data) {
     if (!data || !data.constituencies) return;
-    currentData = Object.values(data.constituencies).sort((a, b) => (a.ac || 0) - (b.ac || 0));
+    // Inject ac number from dict key if not already present (seed data doesn't store it inline)
+    currentData = Object.entries(data.constituencies)
+      .map(([key, c]) => ({...c, ac: c.ac != null ? c.ac : Number(key)}))
+      .sort((a, b) => (a.ac || 0) - (b.ac || 0));
     renderTable();
   }
 
@@ -82,8 +91,12 @@ window.ResultsTable = (() => {
   function partyBadge(party, fullParty) {
     const color = COLORS[party] || '#9ca3af';
     const label = party || '—';
-    return `<span class="party-badge" style="background:${color}22;color:${color};border:1px solid ${color}44">
-      <span class="party-dot" style="background:${color}"></span>${label}
+    const imgSrc = SYMBOLS_IMG[party];
+    const symHtml = imgSrc
+      ? `<img src="${imgSrc}" alt="${party}" class="tbl-sym">`
+      : `<span class="party-dot" style="background:${color}"></span>`;
+    return `<span class="party-badge" style="background:${color}22;color:${color};border:1px solid ${color}44;display:inline-flex;align-items:center;gap:4px">
+      ${symHtml}${label}
     </span>`;
   }
 

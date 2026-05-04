@@ -24,6 +24,13 @@
     IND:     '<span class="party-sym-emoji">👤</span>',
     OTH:     '<span class="party-sym-emoji">🔵</span>',
   };
+  // Smaller symbols for inline badge/table contexts
+  const SYMBOLS_SM = {
+    BJP:     '<img src="./images/symbols/bjp.png"  alt="BJP"    class="tbl-sym">',
+    AITC:    '<img src="./images/symbols/aitc.png" alt="AITC"   class="tbl-sym">',
+    'CPI(M)':'<img src="./images/symbols/cpim.png" alt="CPI(M)" class="tbl-sym">',
+    INC:     '<img src="./images/symbols/inc.png"  alt="INC"    class="tbl-sym">',
+  };
   const PARTY_FULL = {
     BJP:'Bharatiya Janata Party', AITC:'All India Trinamool Congress',
     'CPI(M)':'CPI (Marxist)', INC:'Indian National Congress',
@@ -428,11 +435,12 @@
       .filter(c=>c.margin>0).sort((a,b)=>a.margin-b.margin).slice(0,10);
     el.innerHTML = races.map((c,i) => {
       const color = COLORS[c.party]||'#6b7280';
+      const sym = SYMBOLS_SM[c.party] || '';
       return `<div class="race-row">
         <span class="race-rank">${i+1}</span>
         <div class="race-main">
           <span class="race-name">${c.acName}</span>
-          <span class="hc-badge" style="background:${color}22;color:${color};font-size:.7rem">${c.party}</span>
+          <span class="hc-badge" style="background:${color}22;color:${color};font-size:.7rem;display:inline-flex;align-items:center;gap:3px">${sym}<span>${c.party}</span></span>
         </div>
         <div class="race-margin" style="color:${color}">+${c.margin.toLocaleString()}</div>
         <div class="race-cands">${c.leadCand||'?'} vs ${c.trailCand||'?'}</div>
