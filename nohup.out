@@ -1,0 +1,75 @@
+[01:50:03] === WB 2026 Election Fetcher started ===
+[01:50:03] Output: /Users/deb/Documents/Claude/Projects/ElectionWestBengal2026/ElectionMapWB2026/data/live_data.json
+[01:50:03] Interval: 300s
+[01:50:03] 
+[01:50:03] Fetching live JSON…
+[01:50:03]   Warm-up note: HTTP Error 403: Forbidden (continuing anyway)
+[01:50:03]   Live JSON: 294 constituencies
+[01:50:03] Fetching party totals…
+[01:50:03]   Warm-up note: HTTP Error 403: Forbidden (continuing anyway)
+[01:50:03]   Party totals: 6 parties
+[01:50:03] Fetching statewise pages…
+[01:50:03]   Warm-up note: HTTP Error 403: Forbidden (continuing anyway)
+[01:50:04]   Warm-up note: HTTP Error 403: Forbidden (continuing anyway)
+[01:50:04]   Warm-up note: HTTP Error 403: Forbidden (continuing anyway)
+[01:50:05]   Warm-up note: HTTP Error 403: Forbidden (continuing anyway)
+[01:50:05]   Warm-up note: HTTP Error 403: Forbidden (continuing anyway)
+[01:50:06]   Warm-up note: HTTP Error 403: Forbidden (continuing anyway)
+[01:50:06]   Warm-up note: HTTP Error 403: Forbidden (continuing anyway)
+[01:50:06]   Warm-up note: HTTP Error 403: Forbidden (continuing anyway)
+[01:50:07]   Warm-up note: HTTP Error 403: Forbidden (continuing anyway)
+[01:50:07]   Warm-up note: HTTP Error 403: Forbidden (continuing anyway)
+[01:50:08]   Warm-up note: HTTP Error 403: Forbidden (continuing anyway)
+[01:50:08]   Warm-up note: HTTP Error 403: Forbidden (continuing anyway)
+[01:50:09]   Warm-up note: HTTP Error 403: Forbidden (continuing anyway)
+[01:50:09]   Warm-up note: HTTP Error 403: Forbidden (continuing anyway)
+[01:50:09]   Warm-up note: HTTP Error 403: Forbidden (continuing anyway)
+[01:50:09]   Statewise: 294 constituencies
+[01:50:09] Saved → /Users/deb/Documents/Claude/Projects/ElectionWestBengal2026/ElectionMapWB2026/data/live_data.json  (277/294 reporting)
+[01:50:09] Sleeping 300s until next fetch…
+Traceback (most recent call last):
+  File "/Users/deb/Documents/Claude/Projects/ElectionWestBengal2026/ElectionMapWB2026/fetcher.py", line 386, in <module>
+KeyboardInterrupt
+[01:55:11] === WB 2026 Election Fetcher started ===
+[01:55:11] Output: /Users/deb/Documents/Claude/Projects/ElectionWestBengal2026/ElectionMapWB2026/data/live_data.json
+[01:55:11] Interval: 300s
+[01:55:11] 
+[01:55:11] Fetching live JSON…
+[01:55:11]   ECI requires curl mode — switching (this is normal)
+[01:55:11]   Live JSON: 294 constituencies
+[01:55:11] Fetching party totals…
+[01:55:11]   Party totals: 6 parties
+[01:55:11] Fetching statewise pages…
+Traceback (most recent call last):
+  File "/Users/deb/Documents/Claude/Projects/ElectionWestBengal2026/ElectionMapWB2026/fetcher.py", line 365, in <module>
+    fetch_all()
+    ~~~~~~~~~^^
+  File "/Users/deb/Documents/Claude/Projects/ElectionWestBengal2026/ElectionMapWB2026/fetcher.py", line 274, in fetch_all
+    html = fetch_url(url)
+  File "/Users/deb/Documents/Claude/Projects/ElectionWestBengal2026/ElectionMapWB2026/fetcher.py", line 83, in fetch_url
+    return _fetch_via_curl(url, timeout)
+  File "/Users/deb/Documents/Claude/Projects/ElectionWestBengal2026/ElectionMapWB2026/fetcher.py", line 118, in _fetch_via_curl
+    result = subprocess.run(cmd, capture_output=True, timeout=timeout + 5)
+  File "/opt/homebrew/anaconda3/lib/python3.13/subprocess.py", line 556, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/anaconda3/lib/python3.13/subprocess.py", line 1222, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/anaconda3/lib/python3.13/subprocess.py", line 2128, in _communicate
+    ready = selector.select(timeout)
+  File "/opt/homebrew/anaconda3/lib/python3.13/selectors.py", line 398, in select
+    fd_event_list = self._selector.poll(timeout)
+KeyboardInterrupt
+[02:02:07] === WB 2026 Election Fetcher started ===
+[02:02:07] Output: /Users/deb/Documents/Claude/Projects/ElectionWestBengal2026/ElectionMapWB2026/data/live_data.json
+[02:02:07] Interval: 300s
+[02:02:07] 
+[02:02:07] Fetching live JSON…
+[02:02:08]   ECI requires curl mode — switching (this is normal)
+[02:02:08]   Live JSON: 294 constituencies
+[02:02:08] Fetching party totals…
+[02:02:08]   Party totals: 6 parties
+[02:02:08] Fetching statewise pages…
+[02:02:09]   Statewise: 294 constituencies
+[02:02:09] Saved → /Users/deb/Documents/Claude/Projects/ElectionWestBengal2026/ElectionMapWB2026/data/live_data.json  (294/294 reporting)

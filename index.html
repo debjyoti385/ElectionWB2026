@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>West Bengal Assembly Election 2026 — Live Results</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<!-- Loading -->
+<div id="loading-screen">
+  <div class="spinner"></div>
+  <div style="color:#64748b;font-size:.88rem;margin-top:4px">Loading election results…</div>
+</div>
+
+<!-- Header -->
+<header>
+  <div class="header-inner">
+    <div class="header-brand">
+      <div class="brand-flag">🗳️</div>
+      <div class="brand-text">
+        <h1>West Bengal Assembly Election 2026</h1>
+        <p>Live Counting · 294 Constituencies · Election Commission of India</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="live-badge"><span class="live-dot"></span>LIVE</div>
+      <div class="countdown-bar">
+        Next in <span id="countdown">300s</span>
+        <button id="refresh-btn" class="refresh-btn" onclick="forceRefresh()">
+          <span class="btn-spin"></span><span class="btn-label">⟳ Refresh</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div id="status-bar">
+    <span id="status-msg"></span>
+    <span style="color:#334155">Source: results.eci.gov.in</span>
+  </div>
+</header>
+
+<!-- Tab Nav -->
+<div class="tab-nav-wrap">
+  <div class="tab-nav">
+    <button class="tab-btn active" data-tab="overview"><span class="tab-icon">📊</span>Overview</button>
+    <button class="tab-btn" data-tab="vote"><span class="tab-icon">🗳️</span>Vote Analysis</button>
+    <button class="tab-btn" data-tab="analytics"><span class="tab-icon">🔬</span>Analytics</button>
+    <button class="tab-btn" data-tab="map"><span class="tab-icon">🗺️</span>Map</button>
+    <button class="tab-btn" data-tab="results"><span class="tab-icon">📋</span>All Seats</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB 1: OVERVIEW
+══════════════════════════════════════════════════════ -->
+<div class="tab-panel active" id="tab-overview">
+
+  <!-- Summary Cards -->
+  <div id="summary-cards" class="summary-grid"></div>
+
+  <!-- Alliance Battle -->
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:20px">
+    <div class="section-title">⚔️ Alliance Battle <span>Race to 148 majority</span></div>
+    <div id="alliance-battle"></div>
+  </div>
+
+  <!-- Majority Bar -->
+  <div class="majority-section">
+    <div class="majority-label">
+      <span>Seat Distribution — 294 total</span>
+      <span style="color:#fbbf24">▼ 148 to majority</span>
+    </div>
+    <div class="majority-bar-track">
+      <div id="majority-bar" style="display:flex;width:100%;height:100%"></div>
+      <div class="majority-marker" id="majority-marker" style="left:50.34%"></div>
+    </div>
+  </div>
+
+  <!-- Stats Row -->
+  <div class="stats-row">
+    <div class="stat-box"><div class="stat-val" id="stat-leader">—</div><div class="stat-lbl">Current Leader</div></div>
+    <div class="stat-box"><div class="stat-val" id="stat-reporting">—</div><div class="stat-lbl">Constituencies Reporting</div></div>
+    <div class="stat-box"><div class="stat-val" id="stat-votes" style="font-size:.9rem">—</div><div class="stat-lbl">Total Votes Cast</div></div>
+    <div class="stat-box"><div class="stat-val" id="stat-margin" style="font-size:.85rem">—</div><div class="stat-lbl">Biggest Lead</div></div>
+    <div class="stat-box"><div class="stat-val" id="stat-closest" style="font-size:.85rem">—</div><div class="stat-lbl">Closest Contest</div></div>
+  </div>
+
+  <!-- Charts -->
+  <div class="charts-grid">
+    <div class="chart-box">
+      <h3>Seat Share</h3>
+      <div class="chart-wrap"><canvas id="donut-chart"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <h3>Won vs Leading</h3>
+      <div class="chart-wrap"><canvas id="bar-chart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Star Candidates -->
+  <div class="section-title">⭐ Notable Candidates</div>
+  <div id="star-candidates" class="star-grid" style="margin-bottom:20px"></div>
+
+  <!-- Biggest Leads -->
+  <div class="section-title">🔥 Biggest Leads</div>
+  <div id="highlights-grid" class="highlights-grid"></div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB 2: VOTE ANALYSIS
+══════════════════════════════════════════════════════ -->
+<div class="tab-panel" id="tab-vote">
+
+  <!-- Key Insight Banner -->
+  <div style="background:linear-gradient(135deg,#1a1040,#0d1a2e);border:1px solid #2d1b69;border-radius:var(--radius);padding:18px 22px;margin-bottom:20px">
+    <div style="font-size:1rem;font-weight:700;color:#a5b4fc;margin-bottom:6px">📌 The FPTP Distortion</div>
+    <div style="font-size:.85rem;color:#94a3b8;line-height:1.7">
+      Under First Past The Post voting, a party can win far more <em>seats</em> than its <em>vote share</em> suggests.
+      BJP leads with <strong style="color:#f97316">~45% of votes</strong> but is winning <strong style="color:#f97316">~66% of seats</strong>.
+      AITC has <strong style="color:#3b82f6">~41% of votes</strong> but only <strong style="color:#3b82f6">~32% of seats</strong>.
+    </div>
+  </div>
+
+  <!-- Votes vs Seats Chart -->
+  <div class="charts-grid" style="margin-bottom:20px">
+    <div class="chart-box" style="grid-column:1/-1">
+      <h3>Vote Share % vs Seat Share % — The FPTP Effect</h3>
+      <div class="chart-wrap"><canvas id="votes-vs-seats-chart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Vote Share Donut + Table -->
+  <div class="charts-grid">
+    <div class="chart-box">
+      <h3>Vote Share by Party</h3>
+      <div class="chart-wrap"><canvas id="vote-share-donut"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <h3>All Party Vote Details <span id="total-votes-count" style="font-size:.75rem;color:#64748b;font-weight:400;margin-left:8px"></span></h3>
+      <div style="overflow-y:auto;max-height:240px" id="vote-share-table"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB 3: ANALYTICS
+══════════════════════════════════════════════════════ -->
+<div class="tab-panel" id="tab-analytics">
+
+  <!-- Margin Distribution -->
+  <div class="section-title">📐 Margin Distribution <span>How competitive were the races?</span></div>
+  <div id="margin-categories" class="margin-cats" style="margin-bottom:20px"></div>
+  <div class="chart-box" style="margin-bottom:20px">
+    <h3>Constituencies by Winning Margin</h3>
+    <div class="chart-wrap"><canvas id="margin-histogram"></canvas></div>
+  </div>
+
+  <!-- Closest Races -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+    <div>
+      <div class="section-title">🔴 10 Closest Races</div>
+      <div id="closest-races" class="races-list"></div>
+    </div>
+    <div>
+      <!-- District Chart -->
+      <div class="section-title">🗺️ District-wise Results</div>
+      <div class="chart-box" style="height:420px;padding:14px">
+        <div style="height:100%"><canvas id="district-chart"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB 4: MAP
+══════════════════════════════════════════════════════ -->
+<div class="tab-panel" id="tab-map">
+  <div class="map-container">
+    <div id="map"></div>
+    <div class="map-sidebar">
+      <div class="map-legend">
+        <h3>Party Legend</h3>
+        <div id="map-legend-items">
+          <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div><span>AITC</span><span class="legend-count"></span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:#f97316"></div><span>BJP</span><span class="legend-count"></span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:#dc2626"></div><span>CPI(M)</span><span class="legend-count"></span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:#7c3aed"></div><span>AJUP</span><span class="legend-count"></span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:#059669"></div><span>AISF</span><span class="legend-count"></span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:#475569"></div><span>Pending</span><span class="legend-count"></span></div>
+        </div>
+      </div>
+      <div class="map-info-panel" style="flex:1">
+        <h3>Constituency Info</h3>
+        <div id="map-placeholder" class="map-placeholder">Click any constituency on the map</div>
+        <div id="map-ac-name"></div>
+        <div id="map-ac-details"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB 5: ALL SEATS
+══════════════════════════════════════════════════════ -->
+<div class="tab-panel" id="tab-results">
+  <div class="table-controls">
+    <input type="text" id="table-search" class="search-box" placeholder="Search constituency, candidate, district…"/>
+    <select id="filter-party" class="filter-select">
+      <option value="">All Parties</option>
+      <option value="AITC">AITC</option>
+      <option value="BJP">BJP</option>
+      <option value="CPI(M)">CPI(M)</option>
+      <option value="AJUP">AJUP</option>
+      <option value="AISF">AISF</option>
+      <option value="INC">INC</option>
+      <option value="IND">Independent</option>
+    </select>
+    <select id="filter-status" class="filter-select">
+      <option value="">All Status</option>
+      <option value="declared">Result Declared</option>
+      <option value="progress">In Progress</option>
+      <option value="pending">Pending</option>
+    </select>
+    <span id="results-count" style="color:#475569;font-size:.8rem;white-space:nowrap"></span>
+  </div>
+  <div class="results-table-wrap">
+    <table class="results-table">
+      <thead>
+        <tr>
+          <th data-sort="ac">#</th>
+          <th data-sort="name">Constituency</th>
+          <th data-sort="party">Party</th>
+          <th>Leading / Trailing</th>
+          <th data-sort="margin">Margin</th>
+          <th>Round</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="results-tbody">
+        <tr><td colspan="7" style="text-align:center;padding:32px;color:#475569">Loading…</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <p>Data: <a href="https://results.eci.gov.in/ResultAcGenMay2026/" target="_blank" rel="noopener">Election Commission of India</a> · Auto-refreshes every 5 min · Run <code style="background:var(--surface);padding:1px 5px;border-radius:3px">python3 fetcher.py</code> for live updates</p>
+  <p style="margin-top:4px;color:#1e2d45">West Bengal Assembly Election 2026 · 294 Constituencies · Majority: 148 seats</p>
+</footer>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/seed_data.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/map.js"></script>
+<script src="js/table.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
