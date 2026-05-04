@@ -11,6 +11,19 @@
     AISF:'#0284c7', INC:'#0ea5e9', BSP:'#d97706', IND:'#6b7280',
     OTH:'#9ca3af', ''  :'#475569'
   };
+
+  // Party symbols — official logos where available, emoji fallback for others
+  const SYMBOLS = {
+    BJP:     '<img src="./images/symbols/bjp.png"  alt="BJP"    class="party-sym">',
+    AITC:    '<img src="./images/symbols/aitc.png" alt="AITC"   class="party-sym">',
+    'CPI(M)':'<img src="./images/symbols/cpim.png" alt="CPI(M)" class="party-sym">',
+    INC:     '<img src="./images/symbols/inc.png"  alt="INC"    class="party-sym">',
+    AJUP:    '<span class="party-sym-emoji">🌾</span>',
+    AISF:    '<span class="party-sym-emoji">⭐</span>',
+    BSP:     '<span class="party-sym-emoji">🐘</span>',
+    IND:     '<span class="party-sym-emoji">👤</span>',
+    OTH:     '<span class="party-sym-emoji">🔵</span>',
+  };
   const PARTY_FULL = {
     BJP:'Bharatiya Janata Party', AITC:'All India Trinamool Congress',
     'CPI(M)':'CPI (Marxist)', INC:'Indian National Congress',
@@ -166,7 +179,9 @@
     ];
     el.innerHTML = cards.map(({key,cls}) => {
       const p = pt[key]||{total:0,won:0,leading:0};
+      const sym = SYMBOLS[key] || '';
       return `<div class="summary-card ${cls}">
+        <div class="card-symbol">${sym}</div>
         <div class="card-num">${p.total||0}</div>
         <div class="card-label">${key}</div>
         <div class="card-sub">W:${p.won||0} / L:${p.leading||0}</div>
@@ -197,9 +212,9 @@
 
     el.innerHTML = `
       <div class="battle-labels">
-        <span style="color:${COLORS.BJP};font-weight:700">BJP &nbsp;${BJP_SEATS}</span>
-        <span style="color:#94a3b8;font-size:.8rem">← Majority: ${MAJORITY} →</span>
-        <span style="color:${COLORS.AITC};font-weight:700">${AITC_SEATS} AITC</span>
+        <span style="color:${COLORS.BJP};font-weight:700;display:flex;align-items:center;gap:6px">${SYMBOLS.BJP}<span>BJP &nbsp;${BJP_SEATS}</span></span>
+        <span style="color:var(--muted);font-size:.8rem">← Majority: ${MAJORITY} →</span>
+        <span style="color:${COLORS.AITC};font-weight:700;display:flex;align-items:center;gap:6px"><span>${AITC_SEATS} AITC</span>${SYMBOLS.AITC}</span>
       </div>
       <div class="battle-track">
         ${segments.map(s => `<div class="battle-seg" style="width:${(s.seats/TOTAL*100).toFixed(2)}%;background:${s.color}" title="${s.party}: ${s.seats}"></div>`).join('')}
@@ -306,13 +321,14 @@
       const opponent = isLeading ? c.trailCand : c.leadCand;
       const opponentParty = isLeading ? c.trailParty : c.leadParty;
 
+      const sym = SYMBOLS[sc.party] || '';
       return `<div class="star-card">
         <div class="star-header">
           <div>
             <div class="star-name">${sc.name}</div>
             <div class="star-role" style="color:var(--muted)">${sc.role}</div>
           </div>
-          <span class="hc-badge" style="background:${color}22;color:${color}">${sc.party}</span>
+          <span class="hc-badge" style="background:${color}22;color:${color};display:flex;align-items:center;gap:5px">${sym}${sc.party}</span>
         </div>
         <div class="star-ac" style="color:var(--muted)">${c.acName||''} · AC ${matchedAc}</div>
         <div class="star-status" style="color:${statusColor};font-weight:700">
