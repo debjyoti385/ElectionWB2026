@@ -356,6 +356,34 @@ def fetch_all():
                 "status": sw["status"],
             }
 
+    # ── Rebuild seat counts from constituencies (more reliable than partywise HTML) ──
+    # Reset seat counters so we don't double-count
+    for abbr in party_totals:
+        if isinstance(party_totals[abbr], dict):
+            party_totals[abbr]["won"]     = 0
+            party_totals[abbr]["leading"] = 0
+            party_totals[abbr]["total"]   = 0
+
+    for ac_str, c in const_data.items():
+        abbr = c.get("party", "")
+        if not abbr or abbr == "NA":
+            continue
+        status = c.get("status", "")
+        is_won = "declared" in status.lower()
+
+        if abbr not in party_totals:
+            party_totals[abbr] = {
+                "fullName": PARTY_FULL_NAMES.get(abbr, abbr),
+                "won": 0, "leading": 0, "total": 0,
+                "votes": 0, "votePct": 0.0,
+                "color": PARTY_COLORS.get(abbr, "#9ca3af"),
+            }
+        if is_won:
+            party_totals[abbr]["won"] += 1
+        else:
+            party_totals[abbr]["leading"] += 1
+        party_totals[abbr]["total"] += 1
+
     # Guard: don't overwrite good data with empty results
     if len(const_data) == 0 and len(statewise_data) == 0:
         log("  ⚠ No data fetched — keeping existing live_data.json unchanged")
