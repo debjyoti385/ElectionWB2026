@@ -449,6 +449,16 @@ def git_push():
     import subprocess
     repo_dir = os.path.dirname(os.path.abspath(__file__))
     data_file = os.path.relpath(OUTPUT_FILE, repo_dir)
+
+    # Remove any stale git lock files that block commits/pushes
+    for lock in ("HEAD.lock", "index.lock"):
+        lock_path = os.path.join(repo_dir, ".git", lock)
+        try:
+            if os.path.exists(lock_path):
+                os.remove(lock_path)
+                log(f"  Removed stale {lock}")
+        except OSError:
+            pass
     ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     # Build authenticated remote URL from .env if available
