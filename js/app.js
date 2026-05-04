@@ -114,12 +114,44 @@
     renderStats(data);
     renderHighlights(data);
     renderStarCandidates(data);
+    renderFPTPBanner(data);
     renderVoteShareTable(data);
     renderMarginCategories(data);
     renderClosestRaces(data);
     Charts.render(data);
     ResultsTable.update(data);
     if (mapLoaded) ElectionMap.update(data);
+  }
+
+  // ── FPTP Distortion Banner (dynamic) ─────────────────────────
+  function renderFPTPBanner(data) {
+    const el = document.getElementById('fptp-body');
+    if (!el) return;
+    const pt  = data.partyTotals || {};
+    const ts  = data.totalSeats  || 294;
+
+    const bjpVote  = (pt.BJP?.votePct  || 0).toFixed(1);
+    const aitcVote = (pt.AITC?.votePct || 0).toFixed(1);
+    const bjpSeats  = pt.BJP?.total  || 0;
+    const aitcSeats = pt.AITC?.total || 0;
+    const bjpSeatPct  = bjpSeats  ? (bjpSeats  / ts * 100).toFixed(1) : '—';
+    const aitcSeatPct = aitcSeats ? (aitcSeats / ts * 100).toFixed(1) : '—';
+
+    el.innerHTML = `
+      Under <em>First Past The Post</em> voting, a party can win far more
+      <em>seats</em> than its <em>vote share</em> suggests.
+      BJP leads with
+      <strong style="color:#f97316">${bjpVote}% of votes</strong>
+      but is winning
+      <strong style="color:#f97316">${bjpSeatPct}% of seats (${bjpSeats})</strong>.
+      AITC has
+      <strong style="color:var(--aitc)">${aitcVote}% of votes</strong>
+      but only
+      <strong style="color:var(--aitc)">${aitcSeatPct}% of seats (${aitcSeats})</strong>.
+      <span style="display:block;margin-top:6px;font-size:.8rem;opacity:.75">
+        Vote-to-seat gap — BJP: <strong style="color:#f97316">+${(bjpSeatPct - bjpVote).toFixed(1)}pp</strong> &nbsp;|&nbsp;
+        AITC: <strong style="color:var(--aitc)">${(aitcSeatPct - aitcVote).toFixed(1)}pp</strong>
+      </span>`;
   }
 
   // ── Summary Cards ─────────────────────────────────────────────
