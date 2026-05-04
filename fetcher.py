@@ -38,10 +38,10 @@ HEADERS = {
 
 PARTY_COLORS = {
     "BJP":    "#f97316",
-    "AITC":   "#3b82f6",
+    "AITC":   "#22c55e",
     "CPI(M)": "#dc2626",
     "AJUP":   "#7c3aed",
-    "AISF":   "#059669",
+    "AISF":   "#0284c7",
     "INC":    "#0ea5e9",
     "BSP":    "#d97706",
     "IND":    "#6b7280",

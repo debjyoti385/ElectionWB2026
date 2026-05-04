@@ -29,6 +29,10 @@
     </div>
     <div class="header-right">
       <div class="live-badge"><span class="live-dot"></span>LIVE</div>
+      <button class="theme-toggle" id="theme-toggle" onclick="App.toggleTheme()" title="Toggle light/dark mode">
+        <span class="theme-toggle-icon" id="theme-icon">☀️</span>
+        <span class="toggle-label">Theme</span>
+      </button>
       <div class="countdown-bar">
         Next in <span id="countdown">180s</span>
         <button id="refresh-btn" class="refresh-btn" onclick="forceRefresh()">
@@ -117,12 +121,12 @@
 <div class="tab-panel" id="tab-vote">
 
   <!-- Key Insight Banner -->
-  <div style="background:linear-gradient(135deg,#1a1040,#0d1a2e);border:1px solid #2d1b69;border-radius:var(--radius);padding:18px 22px;margin-bottom:20px">
-    <div style="font-size:1rem;font-weight:700;color:#a5b4fc;margin-bottom:6px">📌 The FPTP Distortion</div>
-    <div style="font-size:.85rem;color:#94a3b8;line-height:1.7">
+  <div class="insight-banner">
+    <div class="insight-banner-head">📌 The FPTP Distortion</div>
+    <div class="insight-banner-body">
       Under First Past The Post voting, a party can win far more <em>seats</em> than its <em>vote share</em> suggests.
       BJP leads with <strong style="color:#f97316">~45% of votes</strong> but is winning <strong style="color:#f97316">~66% of seats</strong>.
-      AITC has <strong style="color:#3b82f6">~41% of votes</strong> but only <strong style="color:#3b82f6">~32% of seats</strong>.
+      AITC has <strong style="color:var(--aitc)">~41% of votes</strong> but only <strong style="color:var(--aitc)">~32% of seats</strong>.
     </div>
   </div>
 
@@ -188,11 +192,11 @@
       <div class="map-legend">
         <h3>Party Legend</h3>
         <div id="map-legend-items">
-          <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div><span>AITC</span><span class="legend-count"></span></div>
-          <div class="legend-item"><div class="legend-dot" style="background:#f97316"></div><span>BJP</span><span class="legend-count"></span></div>
-          <div class="legend-item"><div class="legend-dot" style="background:#dc2626"></div><span>CPI(M)</span><span class="legend-count"></span></div>
-          <div class="legend-item"><div class="legend-dot" style="background:#7c3aed"></div><span>AJUP</span><span class="legend-count"></span></div>
-          <div class="legend-item"><div class="legend-dot" style="background:#059669"></div><span>AISF</span><span class="legend-count"></span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--aitc)"></div><span>AITC</span><span class="legend-count"></span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--bjp)"></div><span>BJP</span><span class="legend-count"></span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--cpim)"></div><span>CPI(M)</span><span class="legend-count"></span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--ajup)"></div><span>AJUP</span><span class="legend-count"></span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--aisf)"></div><span>AISF</span><span class="legend-count"></span></div>
           <div class="legend-item"><div class="legend-dot" style="background:#475569"></div><span>Pending</span><span class="legend-count"></span></div>
         </div>
       </div>

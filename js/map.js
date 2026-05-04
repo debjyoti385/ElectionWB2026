@@ -5,8 +5,8 @@ window.ElectionMap = (() => {
   let currentData = null;
 
   const COLORS = {
-    BJP:    '#f97316', AITC:   '#3b82f6', 'CPI(M)':'#dc2626',
-    AJUP:   '#7c3aed', AISF:   '#059669', INC:    '#0ea5e9',
+    BJP:    '#f97316', AITC:   '#22c55e', 'CPI(M)':'#dc2626',
+    AJUP:   '#7c3aed', AISF:   '#0284c7', INC:    '#0ea5e9',
     BSP:    '#d97706', IND:    '#6b7280', OTH:    '#9ca3af', '': '#475569'
   };
 

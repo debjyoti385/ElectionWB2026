@@ -7,8 +7,8 @@
   const TOTAL     = 294;
 
   const COLORS = {
-    BJP:'#f97316', AITC:'#3b82f6', 'CPI(M)':'#dc2626', AJUP:'#7c3aed',
-    AISF:'#059669', INC:'#0ea5e9', BSP:'#d97706', IND:'#6b7280',
+    BJP:'#f97316', AITC:'#22c55e', 'CPI(M)':'#dc2626', AJUP:'#7c3aed',
+    AISF:'#0284c7', INC:'#0ea5e9', BSP:'#d97706', IND:'#6b7280',
     OTH:'#9ca3af', ''  :'#475569'
   };
   const PARTY_FULL = {
@@ -83,6 +83,7 @@
           delete json.partyTotals.__totalVotes__;
         }
         electionData = json;
+        window._electionData = json;
         renderAll(electionData);
         const istNow = new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true});
         setStatus('✓ Updated '+(json.timestamp||istNow+' IST'),'success');
@@ -409,4 +410,26 @@
 
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init);
   else init();
+})();
+
+/* ── Theme Toggle ────────────────────────────────────────────── */
+window.App = window.App || {};
+App.toggleTheme = function() {
+  const root = document.documentElement;
+  const current = root.getAttribute('data-theme') || 'dark';
+  const next = current === 'dark' ? 'light' : 'dark';
+  root.setAttribute('data-theme', next);
+  localStorage.setItem('wb-theme', next);
+  const icon = document.getElementById('theme-icon');
+  if (icon) icon.textContent = next === 'dark' ? '☀️' : '🌙';
+  // Re-render charts with new theme colors
+  if (window._electionData) Charts.render(window._electionData);
+};
+
+// Apply saved theme on load
+(function() {
+  const saved = localStorage.getItem('wb-theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  const icon = document.getElementById('theme-icon');
+  if (icon) icon.textContent = saved === 'dark' ? '☀️' : '🌙';
 })();
