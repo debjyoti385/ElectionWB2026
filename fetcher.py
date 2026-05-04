@@ -396,7 +396,7 @@ def fetch_all():
     )
 
     output = {
-        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "timestamp": (datetime.utcnow() + __import__('datetime').timedelta(hours=5, minutes=30)).strftime("%d %b %Y, %I:%M:%S %p IST"),
         "totalSeats": 294,
         "totalReporting": reporting,
         "partyTotals": party_totals,

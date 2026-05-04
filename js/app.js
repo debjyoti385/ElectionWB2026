@@ -84,7 +84,8 @@
         }
         electionData = json;
         renderAll(electionData);
-        setStatus('✓ Updated '+(json.timestamp||new Date().toLocaleTimeString()),'success');
+        const istNow = new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true});
+        setStatus('✓ Updated '+(json.timestamp||istNow+' IST'),'success');
       }
     } catch(e) {
       setStatus('⚠ Showing cached data — run fetcher.py for live updates','error');
