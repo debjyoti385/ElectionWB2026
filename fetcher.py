@@ -21,7 +21,7 @@ LIVE_JSON_URL = f"{BASE_URL}/election-json-S25-live.json"
 PARTYWISE_URL = f"{BASE_URL}/partywiseresult-S25.htm"
 STATEWISE_URLS = [f"{BASE_URL}/statewiseS25{i}.htm" for i in range(1, 16)]
 OUTPUT_FILE = os.path.join(os.path.dirname(__file__), "data", "live_data.json")
-FETCH_INTERVAL = 300  # seconds (5 minutes)
+FETCH_INTERVAL = 180  # seconds (3 minutes)
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "

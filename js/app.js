@@ -1,6 +1,6 @@
 /* ── Main App Controller ──────────────────────────────────────── */
 (() => {
-  const REFRESH_INTERVAL = 300;
+  const REFRESH_INTERVAL = 180;
   const DATA_PATH = './data/live_data.json';
   const MAP_PATH  = './data/wb_map.json';
   const MAJORITY  = 148;
