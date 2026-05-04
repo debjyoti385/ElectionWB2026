@@ -19,15 +19,15 @@
   };
 
   // Notable candidates to track
+  // search: substring(s) to match against leadCand/trailCand in ECI data
   const STAR_CANDIDATES = [
-    {name:'MAMATA BANERJEE',      ac:'159', party:'AITC', role:'Chief Minister'},
-    {name:'SUVENDU ADHIKARI',     ac:'210', party:'BJP',  role:'Leader of Opposition'},
-    {name:'DILIP GHOSH',          ac:'224', party:'BJP',  role:'BJP Senior Leader'},
-    {name:'ABHISHEK BANERJEE',    ac:'147', party:'AITC', role:'AITC National Gen Sec'},
-    {name:'FIRHAD HAKIM',         ac:'153', party:'AITC', role:'Kolkata Mayor'},
-    {name:'BIMAN BOSE',           ac:'82',  party:'CPI(M)',role:'Left Front Chair'},
-    {name:'PRASUN BANERJEE',      ac:'45',  party:'AITC', role:'Footballer-Politician'},
-    {name:'NISHITH PRAMANIK',     ac:'2',   party:'BJP',  role:'Union Minister'},
+    {name:'MAMATA BANERJEE',   search:['MAMATA'],       ac:'159', party:'AITC', role:'Chief Minister'},
+    {name:'SUVENDU ADHIKARI',  search:['ADHIKARI SUVENDU','SUVENDU ADHIKARI'], ac:'210', party:'BJP',  role:'Leader of Opposition'},
+    {name:'DILIP GHOSH',       search:['DILIP GHOSH'],  ac:'224', party:'BJP',  role:'BJP Senior Leader'},
+    {name:'FIRHAD HAKIM',      search:['FIRHAD'],       ac:'158', party:'AITC', role:'Kolkata Mayor'},
+    {name:'PRASUN BANERJEE',   search:['PRASUN'],       ac:'45',  party:'AITC', role:'Footballer-Politician'},
+    {name:'NISHITH PRAMANIK',  search:['NISHITH'],      ac:'2',   party:'BJP',  role:'Union Minister'},
+    {name:'ARJUN SINGH',       search:['ARJUN SINGH'],  ac:'107', party:'BJP',  role:'BJP Senior Leader'},
   ];
 
   let electionData = null;
@@ -269,29 +269,57 @@
   function renderStarCandidates(data) {
     const el = document.getElementById('star-candidates');
     if (!el || !data.constituencies) return;
+
     el.innerHTML = STAR_CANDIDATES.map(sc => {
-      const c = data.constituencies[sc.ac];
-      if (!c) return '';
-      const isLeading = (c.leadCand||'').toUpperCase().includes(sc.name.split(' ')[0]) ||
-                        (c.candidate||'').toUpperCase().includes(sc.name.split(' ')[0]);
-      const color = COLORS[sc.party]||'#6b7280';
-      const status = isLeading ? 'leading' : 'trailing';
-      const statusColor = isLeading ? '#4ade80' : '#f87171';
+      // First try the known AC; then scan all constituencies using search terms
+      let c = data.constituencies[sc.ac];
+      let matchedAc = sc.ac;
+
+      // Verify the known AC actually contains this candidate
+      const nameInAc = (sc.search || [sc.name]).some(term =>
+        (c?.leadCand||'').toUpperCase().includes(term) ||
+        (c?.trailCand||'').toUpperCase().includes(term)
+      );
+
+      if (!nameInAc) {
+        // Scan all constituencies for the candidate name
+        for (const [ac, cst] of Object.entries(data.constituencies)) {
+          const lead  = (cst.leadCand  || '').toUpperCase();
+          const trail = (cst.trailCand || '').toUpperCase();
+          const found = (sc.search || [sc.name]).some(t => lead.includes(t) || trail.includes(t));
+          if (found) { c = cst; matchedAc = ac; break; }
+        }
+      }
+
+      if (!c) return '';   // candidate genuinely not found in data
+
+      const terms = sc.search || [sc.name];
+      const isLeading = terms.some(t => (c.leadCand||'').toUpperCase().includes(t));
+      const color = COLORS[sc.party] || '#6b7280';
+      const statusColor = isLeading ? 'var(--status-ok)' : 'var(--status-err)';
+      const declared = (c.status||'').toLowerCase().includes('declared');
+      const statusLabel = declared
+        ? (isLeading ? '✓ Won' : '✗ Lost')
+        : (isLeading ? '▲ Leading' : '▼ Trailing');
+
+      // Show the correct opponent name
+      const opponent = isLeading ? c.trailCand : c.leadCand;
+      const opponentParty = isLeading ? c.trailParty : c.leadParty;
+
       return `<div class="star-card">
         <div class="star-header">
           <div>
             <div class="star-name">${sc.name}</div>
-            <div class="star-role">${sc.role}</div>
+            <div class="star-role" style="color:var(--muted)">${sc.role}</div>
           </div>
           <span class="hc-badge" style="background:${color}22;color:${color}">${sc.party}</span>
         </div>
-        <div class="star-ac">${c.acName} (AC ${sc.ac})</div>
-        <div class="star-status" style="color:${statusColor}">
-          ${isLeading ? '▲ Leading' : '▼ Trailing'}
-          ${c.margin ? ` by ${c.margin.toLocaleString()} votes` : ''}
+        <div class="star-ac" style="color:var(--muted)">${c.acName||''} · AC ${matchedAc}</div>
+        <div class="star-status" style="color:${statusColor};font-weight:700">
+          ${statusLabel}${c.margin ? ` · ${c.margin.toLocaleString()} votes` : ''}
         </div>
-        <div class="star-vs">${c.leadCand||'—'} vs ${c.trailCand||'—'}</div>
-        ${c.round?`<div style="font-size:.72rem;color:#64748b;margin-top:4px">Round ${c.round}</div>`:''}
+        <div class="star-vs" style="color:var(--muted)">vs ${opponent||'—'} <span style="font-size:.68rem">(${opponentParty||''})</span></div>
+        ${c.round ? `<div style="font-size:.7rem;color:var(--muted);margin-top:3px">Round ${c.round}</div>` : ''}
       </div>`;
     }).join('');
   }
