@@ -13,7 +13,9 @@ import sys
 import time
 import urllib.request
 import urllib.error
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
+
+IST = timezone(timedelta(hours=5, minutes=30))
 
 # ── Configuration ────────────────────────────────────────────────────────────
 BASE_URL = "https://results.eci.gov.in/ResultAcGenMay2026"
@@ -396,7 +398,7 @@ def fetch_all():
     )
 
     output = {
-        "timestamp": (datetime.utcnow() + __import__('datetime').timedelta(hours=5, minutes=30)).strftime("%d %b %Y, %I:%M:%S %p IST"),
+        "timestamp": datetime.now(IST).strftime("%d %b %Y, %I:%M:%S %p IST"),
         "totalSeats": 294,
         "totalReporting": reporting,
         "partyTotals": party_totals,
@@ -422,7 +424,7 @@ def _guess_abbr(full_name):
 
 
 def log(msg):
-    ts = datetime.now().strftime("%H:%M:%S")
+    ts = datetime.now(IST).strftime("%H:%M:%S IST")
     print(f"[{ts}] {msg}", flush=True)
 
 
@@ -459,7 +461,7 @@ def git_push():
                 log(f"  Removed stale {lock}")
         except OSError:
             pass
-    ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    ts = datetime.now(IST).strftime("%d %b %Y, %I:%M:%S %p IST")
 
     # Build authenticated remote URL from .env if available
     env = _load_env()
