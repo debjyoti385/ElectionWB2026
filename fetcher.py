@@ -398,25 +398,68 @@ def log(msg):
     print(f"[{ts}] {msg}", flush=True)
 
 
+def _load_env():
+    """Load key=value pairs from .env file next to this script (if present)."""
+    env_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+    env = {}
+    if os.path.exists(env_file):
+        with open(env_file) as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    k, _, v = line.partition("=")
+                    env[k.strip()] = v.strip()
+    return env
+
+
 def git_push():
-    """Commit updated live_data.json and push to remote (for GitHub Pages)."""
+    """Commit updated live_data.json and push to remote (for GitHub Pages).
+
+    Reads GITHUB_PAT and GITHUB_REMOTE from .env (never stored in the repo).
+    Falls back to the existing git remote if .env is not present.
+    """
     import subprocess
     repo_dir = os.path.dirname(os.path.abspath(__file__))
     data_file = os.path.relpath(OUTPUT_FILE, repo_dir)
     ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    # Build authenticated remote URL from .env if available
+    env = _load_env()
+    pat    = env.get("GITHUB_PAT") or os.environ.get("GITHUB_PAT")
+    remote = env.get("GITHUB_REMOTE") or os.environ.get("GITHUB_REMOTE")
+
+    push_url = None
+    if pat and remote:
+        # Inject PAT into URL: https://<user>:<pat>@github.com/...
+        # Works with both https://github.com/... and git@github.com:... forms
+        if remote.startswith("https://"):
+            # Strip any existing credentials first
+            bare = re.sub(r"https://[^@]*@", "https://", remote)
+            host_path = bare[len("https://"):]
+            push_url = f"https://debjyoti385:{pat}@{host_path}"
+        else:
+            log("  git: GITHUB_REMOTE must be an https:// URL for PAT auth")
+    else:
+        if not pat:
+            log("  git: GITHUB_PAT not found in .env — using existing remote credentials")
+
     cmds = [
         ["git", "-C", repo_dir, "add", data_file],
         ["git", "-C", repo_dir, "commit", "-m", f"results: auto-update {ts}"],
-        ["git", "-C", repo_dir, "push"],
+        (["git", "-C", repo_dir, "push", push_url, "main"] if push_url
+         else ["git", "-C", repo_dir, "push"]),
     ]
     for cmd in cmds:
+        # Never log the push URL — it contains the PAT
+        display = cmd.copy()
+        if push_url and push_url in display:
+            display[display.index(push_url)] = "<remote>"
         result = subprocess.run(cmd, capture_output=True, text=True)
         if result.returncode != 0:
-            # "nothing to commit" is not an error
             if "nothing to commit" in result.stdout + result.stderr:
                 log("  git: nothing new to commit")
                 return
-            log(f"  git error ({' '.join(cmd[2:])}): {result.stderr.strip()}")
+            log(f"  git error ({' '.join(display[2:])}): {result.stderr.strip()}")
             return
     log("  ✓ Pushed live_data.json to GitHub")
 

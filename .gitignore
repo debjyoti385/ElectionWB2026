@@ -1,0 +1,15 @@
+# Secret credentials — NEVER commit this
+.env
+
+# Logs
+fetcher.log
+nohup.out
+*.log
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# macOS
+.DS_Store
