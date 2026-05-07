@@ -178,16 +178,35 @@
 ══════════════════════════════════════════════════════ -->
 <div class="tab-panel" id="tab-districts">
 
-  <!-- District summary chart -->
-  <div class="section-title">🏙️ District-wise Party Breakdown <span>All 22 districts · leading party on top bar</span></div>
+  <!-- District chip selector -->
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:16px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+      <div class="section-title" style="margin-bottom:0">🏙️ Select a District</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button id="dist-all-btn" class="dist-all-btn active" onclick="DistrictView.selectAll()">All Districts</button>
+        <span id="dist-summary-badge" style="font-size:.75rem;color:var(--muted)"></span>
+      </div>
+    </div>
+    <div id="dist-chips" class="dist-chip-row"></div>
+  </div>
+
+  <!-- District detail panel (shown when a single district is selected) -->
+  <div id="dist-detail-panel" style="display:none;margin-bottom:16px">
+    <div id="dist-detail-header" class="dist-detail-header"></div>
+    <div id="dist-constituency-grid" class="dist-const-grid"></div>
+  </div>
+
+  <!-- All districts overview chart -->
   <div class="chart-box" style="margin-bottom:20px">
-    <h3>Seats won/leading per district</h3>
+    <h3 id="district-chart-title">Seats won/leading — all 23 districts</h3>
     <div style="height:520px"><canvas id="district-chart"></canvas></div>
   </div>
 
-  <!-- District cards -->
-  <div class="section-title">📌 District Scorecards</div>
-  <div id="district-cards" class="dist-cards-grid"></div>
+  <!-- District scorecards (shown in All mode) -->
+  <div id="dist-cards-section">
+    <div class="section-title">📌 District Scorecards</div>
+    <div id="district-cards" class="dist-cards-grid"></div>
+  </div>
 
 </div>
 
@@ -289,6 +308,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="js/seed_data.js"></script>
+<script src="js/ac_district_map.js"></script>
 <script src="js/charts.js"></script>
 <script src="js/map.js"></script>
 <script src="js/table.js"></script>
