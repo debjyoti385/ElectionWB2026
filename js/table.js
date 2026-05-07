@@ -5,7 +5,16 @@ window.ResultsTable = (() => {
   let sortAsc = true;
   let filterParty = '';
   let filterStatus = '';
+  let filterDistrict = '';
   let searchQuery = '';
+
+  const DISTRICT_ORDER = [
+    'Cooch Behar','Alipurduar','Jalpaiguri','Kalimpong','Darjeeling',
+    'Uttar Dinajpur','Dakshin Dinajpur','Malda','Murshidabad','Nadia',
+    'North 24 Parganas','South 24 Parganas','Kolkata','Howrah','Hooghly',
+    'Purba Medinipur','Paschim Medinipur','Jhargram','Purulia','Bankura',
+    'Purba Bardhaman','Paschim Bardhaman','Birbhum'
+  ];
 
   const COLORS = {
     BJP: '#f97316', AITC: '#22c55e', 'CPI(M)': '#dc2626',
@@ -19,14 +28,28 @@ window.ResultsTable = (() => {
     INC:     './images/symbols/inc.png',
   };
 
-  function init() {
-    const searchEl = document.getElementById('table-search');
-    const partyEl = document.getElementById('filter-party');
-    const statusEl = document.getElementById('filter-status');
+  function populateDistrictFilter() {
+    const el = document.getElementById('filter-district');
+    if (!el || el.options.length > 1) return; // already populated
+    DISTRICT_ORDER.forEach(d => {
+      const opt = document.createElement('option');
+      opt.value = d; opt.textContent = d;
+      el.appendChild(opt);
+    });
+  }
 
-    if (searchEl) searchEl.addEventListener('input', e => { searchQuery = e.target.value.toLowerCase(); renderTable(); });
-    if (partyEl)  partyEl.addEventListener('change', e => { filterParty = e.target.value; renderTable(); });
-    if (statusEl) statusEl.addEventListener('change', e => { filterStatus = e.target.value; renderTable(); });
+  function init() {
+    const searchEl   = document.getElementById('table-search');
+    const partyEl    = document.getElementById('filter-party');
+    const statusEl   = document.getElementById('filter-status');
+    const districtEl = document.getElementById('filter-district');
+
+    if (searchEl)   searchEl.addEventListener('input',  e => { searchQuery = e.target.value.toLowerCase(); renderTable(); });
+    if (partyEl)    partyEl.addEventListener('change',  e => { filterParty = e.target.value; renderTable(); });
+    if (statusEl)   statusEl.addEventListener('change', e => { filterStatus = e.target.value; renderTable(); });
+    if (districtEl) districtEl.addEventListener('change', e => { filterDistrict = e.target.value; renderTable(); });
+
+    populateDistrictFilter();
 
     // Sort headers
     document.querySelectorAll('th[data-sort]').forEach(th => {
@@ -43,16 +66,20 @@ window.ResultsTable = (() => {
 
   function update(data) {
     if (!data || !data.constituencies) return;
-    // Inject ac number from dict key if not already present (seed data doesn't store it inline)
+    const distMap = window.WB_DISTRICT_MAP || {};
     currentData = Object.entries(data.constituencies)
-      .map(([key, c]) => ({...c, ac: c.ac != null ? c.ac : Number(key)}))
+      .map(([key, c]) => {
+        const ac = c.ac != null ? Number(c.ac) : Number(key);
+        return { ...c, ac, district: distMap[ac] || c.district || '' };
+      })
       .sort((a, b) => (a.ac || 0) - (b.ac || 0));
     renderTable();
   }
 
   function getFiltered() {
     return currentData.filter(c => {
-      if (filterParty && c.party !== filterParty) return false;
+      if (filterParty    && c.party    !== filterParty)    return false;
+      if (filterDistrict && c.district !== filterDistrict) return false;
       if (filterStatus) {
         if (filterStatus === 'declared' && c.status !== 'Result Declared') return false;
         if (filterStatus === 'progress' && c.status !== 'Result in Progress') return false;
@@ -61,10 +88,11 @@ window.ResultsTable = (() => {
       if (searchQuery) {
         const q = searchQuery;
         return (
-          (c.acName || '').toLowerCase().includes(q) ||
-          (c.leadCand || '').toLowerCase().includes(q) ||
+          (c.acName    || '').toLowerCase().includes(q) ||
+          (c.leadCand  || '').toLowerCase().includes(q) ||
           (c.trailCand || '').toLowerCase().includes(q) ||
-          (c.party || '').toLowerCase().includes(q) ||
+          (c.party     || '').toLowerCase().includes(q) ||
+          (c.district  || '').toLowerCase().includes(q) ||
           String(c.ac).includes(q)
         );
       }
@@ -135,6 +163,7 @@ window.ResultsTable = (() => {
         <td class="ac-no">${c.ac || '—'}</td>
         <td>
           <a class="ac-link" href="${eciUrl}" target="_blank" rel="noopener">${c.acName || '—'}</a>
+          ${c.district ? `<div style="font-size:.68rem;color:var(--muted);margin-top:1px">${c.district}</div>` : ''}
         </td>
         <td>${partyBadge(c.party, c.fullParty)}</td>
         <td>
