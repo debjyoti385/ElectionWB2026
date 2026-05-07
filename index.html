@@ -53,6 +53,7 @@
     <button class="tab-btn active" data-tab="overview"><span class="tab-icon">📊</span>Overview</button>
     <button class="tab-btn" data-tab="vote"><span class="tab-icon">🗳️</span>Vote Analysis</button>
     <button class="tab-btn" data-tab="analytics"><span class="tab-icon">🔬</span>Analytics</button>
+    <button class="tab-btn" data-tab="districts"><span class="tab-icon">🏙️</span>Districts</button>
     <button class="tab-btn" data-tab="map"><span class="tab-icon">🗺️</span>Map</button>
     <button class="tab-btn" data-tab="results"><span class="tab-icon">📋</span>All Seats</button>
   </div>
@@ -70,18 +71,6 @@
   <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:20px">
     <div class="section-title">⚔️ Alliance Battle <span>Race to 148 majority</span></div>
     <div id="alliance-battle"></div>
-  </div>
-
-  <!-- Majority Bar -->
-  <div class="majority-section">
-    <div class="majority-label">
-      <span>Seat Distribution — 294 total</span>
-      <span style="color:#fbbf24">▼ 148 to majority</span>
-    </div>
-    <div class="majority-bar-track">
-      <div id="majority-bar" style="display:flex;width:100%;height:100%"></div>
-      <div class="majority-marker" id="majority-marker" style="left:50.34%"></div>
-    </div>
   </div>
 
   <!-- Stats Row -->
@@ -109,9 +98,22 @@
   <div class="section-title">⭐ Notable Candidates</div>
   <div id="star-candidates" class="star-grid" style="margin-bottom:20px"></div>
 
+  <!-- Overview Mini-Map -->
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:20px;position:relative">
+    <div style="padding:14px 18px 0;display:flex;justify-content:space-between;align-items:center">
+      <div class="section-title" style="margin-bottom:10px">🗺️ West Bengal Constituency Map</div>
+      <button onclick="App.switchToMap()" style="font-size:.75rem;color:var(--accent2);background:none;border:none;cursor:pointer;padding:4px 8px;border-radius:6px;border:1px solid var(--border)">Explore Full Map →</button>
+    </div>
+    <div id="overview-map" style="height:400px"></div>
+  </div>
+
   <!-- Biggest Leads -->
   <div class="section-title">🔥 Biggest Leads</div>
-  <div id="highlights-grid" class="highlights-grid"></div>
+  <div id="highlights-grid" class="highlights-grid" style="margin-bottom:20px"></div>
+
+  <!-- Closest Contests -->
+  <div class="section-title">⚡ Closest Contests <span>Tightest margins in this count</span></div>
+  <div id="closest-contests-grid" class="highlights-grid"></div>
 
 </div>
 
@@ -166,24 +168,31 @@
   </div>
 
   <!-- Closest Races -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
-    <div>
-      <div class="section-title">🔴 10 Closest Races</div>
-      <div id="closest-races" class="races-list"></div>
-    </div>
-    <div>
-      <!-- District Chart -->
-      <div class="section-title">🗺️ District-wise Results</div>
-      <div class="chart-box" style="height:420px;padding:14px">
-        <div style="height:100%"><canvas id="district-chart"></canvas></div>
-      </div>
-    </div>
-  </div>
+  <div class="section-title">🔴 10 Closest Races</div>
+  <div id="closest-races" class="races-list" style="margin-bottom:20px"></div>
 
 </div>
 
 <!-- ══════════════════════════════════════════════════════
-     TAB 4: MAP
+     TAB 4: DISTRICTS
+══════════════════════════════════════════════════════ -->
+<div class="tab-panel" id="tab-districts">
+
+  <!-- District summary chart -->
+  <div class="section-title">🏙️ District-wise Party Breakdown <span>All 22 districts · leading party on top bar</span></div>
+  <div class="chart-box" style="margin-bottom:20px">
+    <h3>Seats won/leading per district</h3>
+    <div style="height:520px"><canvas id="district-chart"></canvas></div>
+  </div>
+
+  <!-- District cards -->
+  <div class="section-title">📌 District Scorecards</div>
+  <div id="district-cards" class="dist-cards-grid"></div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB 5: MAP
 ══════════════════════════════════════════════════════ -->
 <div class="tab-panel" id="tab-map">
   <div class="map-container">

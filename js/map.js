@@ -4,6 +4,11 @@ window.ElectionMap = (() => {
   let geojsonLayer = null;
   let currentData = null;
 
+  // ── Overview mini-map ─────────────────────────────────────────
+  let overviewMap = null;
+  let overviewLayer = null;
+  let overviewData = null;
+
   const COLORS = {
     BJP:    '#f97316', AITC:   '#22c55e', 'CPI(M)':'#dc2626',
     AJUP:   '#7c3aed', AISF:   '#0284c7', INC:    '#0ea5e9',
@@ -194,5 +199,58 @@ window.ElectionMap = (() => {
     `).join('');
   }
 
-  return { init, update };
+  function initOverview(mapData, electionData) {
+    overviewData = electionData;
+    const mapEl = document.getElementById('overview-map');
+    if (!mapEl) return;
+    if (overviewMap) { overviewMap.remove(); overviewMap = null; }
+
+    overviewMap = L.map('overview-map', {
+      center: [23.5, 87.5], zoom: 6,
+      zoomControl: true, attributionControl: false,
+      scrollWheelZoom: false
+    });
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      subdomains: 'abcd', maxZoom: 14, opacity: 0.5
+    }).addTo(overviewMap);
+
+    overviewLayer = L.geoJSON(mapData, {
+      style: feat => {
+        const c = overviewData?.constituencies?.[String(feat.properties.AC_NO)];
+        return {
+          fillColor: COLORS[c?.party||''] || '#475569',
+          weight: 0.5, color: '#0f172a', fillOpacity: 0.82
+        };
+      },
+      onEachFeature: (feat, layer) => {
+        const acNo = feat.properties.AC_NO;
+        layer.bindTooltip(() => {
+          const c = overviewData?.constituencies?.[String(acNo)];
+          const p = c ? (PARTY_LABELS[c.party] || c.party || 'Pending') : 'No data';
+          return `<strong>${feat.properties.AC_NAME}</strong><br>${p}${c?.margin?'<br>Margin: '+c.margin.toLocaleString():''}`;
+        }, { direction:'top', offset:[0,-2], className:'map-tooltip' });
+        layer.on('click', () => {
+          if (window.App && App.switchToMap) App.switchToMap();
+        });
+      }
+    }).addTo(overviewMap);
+
+    try { overviewMap.fitBounds(overviewLayer.getBounds(), { padding: [5, 5] }); } catch(e) {}
+  }
+
+  function updateOverview(electionData) {
+    overviewData = electionData;
+    if (overviewLayer) {
+      overviewLayer.setStyle(feat => {
+        const c = overviewData?.constituencies?.[String(feat.properties.AC_NO)];
+        return {
+          fillColor: COLORS[c?.party||''] || '#475569',
+          weight: 0.5, color: '#0f172a', fillOpacity: 0.82
+        };
+      });
+    }
+  }
+
+  return { init, update, initOverview, updateOverview };
 })();

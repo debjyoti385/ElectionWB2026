@@ -255,6 +255,18 @@ table.results-table tbody tr:last-child td{border-bottom:none}
 /* ── District badge ─────────────────────────────────────────── */
 .dist-badge{font-size:.68rem;color:var(--dist-txt);background:var(--dist-bg);padding:1px 5px;border-radius:4px;margin-left:4px}
 
+/* ── District Scorecards ────────────────────────────────────── */
+.dist-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin-bottom:20px}
+.dist-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;transition:background .25s,transform .15s,box-shadow .15s}
+.dist-card:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.1)}
+.dist-name{font-size:.92rem;font-weight:700;color:var(--text2);margin-bottom:3px}
+.dist-seats-count{font-size:.7rem;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em}
+.dist-bar-wrap{height:8px;border-radius:4px;overflow:hidden;display:flex;background:var(--surface2);margin-bottom:8px}
+.dist-breakdown{display:flex;gap:8px;flex-wrap:wrap;font-size:.75rem;font-weight:600}
+
+/* ── Overview mini-map ──────────────────────────────────────── */
+#overview-map .leaflet-control-zoom{margin:8px!important}
+
 /* ── Footer ─────────────────────────────────────────────────── */
 footer{text-align:center;padding:20px;font-size:.75rem;color:var(--muted);border-top:1px solid var(--border);margin-top:32px}
 

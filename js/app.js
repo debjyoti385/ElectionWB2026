@@ -41,18 +41,26 @@
   // Notable candidates to track
   // search: substring(s) to match against leadCand/trailCand in ECI data
   const STAR_CANDIDATES = [
-    {name:'MAMATA BANERJEE',   search:['MAMATA'],       ac:'159', party:'AITC', role:'Chief Minister'},
-    {name:'SUVENDU ADHIKARI',  search:['ADHIKARI SUVENDU','SUVENDU ADHIKARI'], ac:'210', party:'BJP',  role:'Leader of Opposition'},
-    {name:'DILIP GHOSH',       search:['DILIP GHOSH'],  ac:'224', party:'BJP',  role:'BJP Senior Leader'},
-    {name:'FIRHAD HAKIM',      search:['FIRHAD'],       ac:'158', party:'AITC', role:'Kolkata Mayor'},
-    {name:'PRASUN BANERJEE',   search:['PRASUN'],       ac:'45',  party:'AITC', role:'Footballer-Politician'},
-    {name:'NISHITH PRAMANIK',  search:['NISHITH'],      ac:'2',   party:'BJP',  role:'Union Minister'},
-    {name:'ARJUN SINGH',       search:['ARJUN SINGH'],  ac:'107', party:'BJP',  role:'BJP Senior Leader'},
+    {name:'MAMATA BANERJEE',          search:['MAMATA BANERJEE','MAMATA'],     ac:'159', party:'AITC', role:'Chief Minister'},
+    {name:'SUVENDU ADHIKARI',         search:['SUVENDU ADHIKARI','ADHIKARI SUVENDU'], ac:'210', party:'BJP',  role:'Leader of Opposition'},
+    {name:'FIRHAD HAKIM',             search:['FIRHAD'],                       ac:'158', party:'AITC', role:'Kolkata Mayor'},
+    {name:'DILIP GHOSH',              search:['DILIP GHOSH'],                  ac:'224', party:'BJP',  role:'BJP Senior Leader'},
+    {name:'RATNA DEBNATH',            search:['RATNA DEBNATH','RATNA DE'],     ac:'63',  party:'AITC', role:'AITC Senior Leader'},
+    {name:'CHANDRIMA BHATTACHARYA',   search:['CHANDRIMA'],                    ac:'126', party:'AITC', role:'Finance Minister'},
+    {name:'SHANTANU THAKUR',          search:['SHANTANU THAKUR','SHANTANU'],   ac:'107', party:'BJP',  role:'Union Minister (Matua)'},
+    {name:'BABUL SUPRIYO',            search:['BABUL'],                        ac:'193', party:'AITC', role:'Former Bollywood Singer'},
+    {name:'MADAN MITRA',              search:['MADAN MITRA'],                  ac:'114', party:'AITC', role:'AITC Senior Leader'},
+    {name:'BRATYA BASU',              search:['BRATYA'],                       ac:'190', party:'AITC', role:'Education Minister'},
+    {name:'NISHITH PRAMANIK',         search:['NISHITH'],                      ac:'2',   party:'BJP',  role:'Union Minister'},
+    {name:'PRASUN BANERJEE',          search:['PRASUN'],                       ac:'45',  party:'AITC', role:'Footballer-Politician'},
+    {name:'ARJUN SINGH',              search:['ARJUN SINGH'],                  ac:'107', party:'BJP',  role:'BJP Senior Leader'},
+    {name:'SUBHAS SARKAR',            search:['SUBHAS SARKAR'],                ac:'211', party:'BJP',  role:'Union Minister'},
   ];
 
   let electionData = null;
-  let mapGeoJSON   = null;
-  let mapLoaded    = false;
+  let mapGeoJSON        = null;
+  let mapLoaded         = false;
+  let overviewMapLoaded = false;
   let countdown    = REFRESH_INTERVAL;
   let timer        = null;
   let isFetching   = false;
@@ -68,6 +76,7 @@
     setupTabs();
     ResultsTable.init();
     await fetchData();
+    loadOverviewMap();   // load mini-map on overview after data ready
     startCountdown();
   }
 
@@ -113,13 +122,30 @@
     } finally { isFetching = false; }
   }
 
+  async function loadOverviewMap() {
+    if (overviewMapLoaded) { ElectionMap.updateOverview(electionData); return; }
+    try {
+      if (!mapGeoJSON) {
+        const r = await fetch(MAP_PATH);
+        if (!r.ok) throw new Error('HTTP '+r.status);
+        mapGeoJSON = await r.json();
+      }
+      if (electionData) {
+        ElectionMap.initOverview(mapGeoJSON, electionData);
+        overviewMapLoaded = true;
+      }
+    } catch(e) { /* overview map fails silently */ }
+  }
+
   async function loadMap() {
     if (mapLoaded) { ElectionMap.update(electionData); return; }
     setStatus('Loading map data…','');
     try {
-      const r = await fetch(MAP_PATH);
-      if (!r.ok) throw new Error('HTTP '+r.status);
-      mapGeoJSON = await r.json();
+      if (!mapGeoJSON) {
+        const r = await fetch(MAP_PATH);
+        if (!r.ok) throw new Error('HTTP '+r.status);
+        mapGeoJSON = await r.json();
+      }
       ElectionMap.init(mapGeoJSON, electionData);
       mapLoaded = true;
       setStatus('Map loaded','success');
@@ -130,17 +156,19 @@
   function renderAll(data) {
     renderSummaryCards(data);
     renderAllianceBattle(data);
-    renderMajorityBar(data);
     renderStats(data);
-    renderHighlights(data);
     renderStarCandidates(data);
+    renderHighlights(data);
+    renderClosestContests(data);
     renderFPTPBanner(data);
     renderVoteShareTable(data);
     renderMarginCategories(data);
     renderClosestRaces(data);
+    renderDistrictTab(data);
     Charts.render(data);
     ResultsTable.update(data);
     if (mapLoaded) ElectionMap.update(data);
+    if (overviewMapLoaded) ElectionMap.updateOverview(data);
   }
 
   // ── FPTP Distortion Banner (dynamic) ─────────────────────────
@@ -283,6 +311,79 @@
         ${c.margin?`<div class="hc-margin">+${c.margin.toLocaleString()} votes</div>`:''}
         ${c.trailCand?`<div class="hc-trail">vs ${c.trailCand}</div>`:''}
         <span class="status-badge ${statusCls}" style="font-size:.68rem">${c.round?'Rnd '+c.round:c.status}</span>
+      </div>`;
+    }).join('');
+  }
+
+  // ── Closest Contests (overview) ───────────────────────────────
+  function renderClosestContests(data) {
+    const el = document.getElementById('closest-contests-grid');
+    if (!el) return;
+    const consts = Object.values(data.constituencies||{})
+      .filter(c=>c.margin>0).sort((a,b)=>a.margin-b.margin).slice(0,10);
+    el.innerHTML = consts.map((c,i) => {
+      const color = COLORS[c.party]||'#6b7280';
+      const tight = c.margin < 500 ? '#ef4444' : c.margin < 2000 ? '#f97316' : '#eab308';
+      const statusCls = c.status==='Result Declared'?'status-declared':'status-progress';
+      const sym = SYMBOLS_SM[c.party]||'';
+      return `<div class="highlight-card" style="border-left-color:${tight}">
+        <div class="hc-top">
+          <span class="hc-ac">${c.acName||'—'}</span>
+          <span class="hc-badge" style="background:${color}22;color:${color};display:inline-flex;align-items:center;gap:3px">${sym}${c.party||'?'}</span>
+        </div>
+        <div class="hc-cand">${c.leadCand||c.candidate||'—'}</div>
+        ${c.margin?`<div class="hc-margin" style="color:${tight}">⚡ ${c.margin.toLocaleString()} votes ahead</div>`:''}
+        ${c.trailCand?`<div class="hc-trail">vs ${c.trailCand}${c.trailParty?' · '+c.trailParty.replace('All India Trinamool Congress','AITC').replace('Bharatiya Janata Party','BJP'):''}</div>`:''}
+        <span class="status-badge ${statusCls}" style="font-size:.68rem">${c.round?'Rnd '+c.round:c.status}</span>
+      </div>`;
+    }).join('');
+  }
+
+  // ── District Tab ─────────────────────────────────────────────
+  function renderDistrictTab(data) {
+    const el = document.getElementById('district-cards');
+    if (!el) return;
+    const byDist = {};
+    Object.values(data.constituencies||{}).forEach(c => {
+      const d = c.district||'Other';
+      if (!byDist[d]) byDist[d] = {seats:{}, total:0};
+      const p = c.party||'OTH';
+      byDist[d].seats[p] = (byDist[d].seats[p]||0)+1;
+      byDist[d].total++;
+    });
+    const dists = Object.entries(byDist).sort((a,b)=>{
+      // Sort by AITC+BJP seats desc (most contested first)
+      const da = a[1], db = b[1];
+      return db.total - da.total;
+    });
+    el.innerHTML = dists.map(([dist, info]) => {
+      const sorted = Object.entries(info.seats).sort((a,b)=>b[1]-a[1]);
+      const topParty = sorted[0];
+      const borderColor = COLORS[topParty?.[0]] || '#9ca3af';
+      const aitc = info.seats['AITC']||0;
+      const bjp  = info.seats['BJP']||0;
+      const cpim = info.seats['CPI(M)']||0;
+      const oth  = info.total - aitc - bjp - cpim;
+
+      const barSegs = [
+        {p:'AITC', n:aitc, col:COLORS.AITC},
+        {p:'BJP',  n:bjp,  col:COLORS.BJP},
+        {p:'CPI(M)',n:cpim,col:COLORS['CPI(M)']},
+        {p:'Oth',  n:oth,  col:'#9ca3af'},
+      ].filter(s=>s.n>0);
+
+      return `<div class="dist-card" style="border-top:3px solid ${borderColor}">
+        <div class="dist-name">${dist}</div>
+        <div class="dist-seats-count">${info.total} constituencies</div>
+        <div class="dist-bar-wrap">
+          ${barSegs.map(s=>`<div style="width:${(s.n/info.total*100).toFixed(1)}%;background:${s.col}" title="${s.p}: ${s.n}"></div>`).join('')}
+        </div>
+        <div class="dist-breakdown">
+          ${aitc?`<span style="color:${COLORS.AITC}">AITC ${aitc}</span>`:''}
+          ${bjp?`<span style="color:${COLORS.BJP}">BJP ${bjp}</span>`:''}
+          ${cpim?`<span style="color:${COLORS['CPI(M)']}">L ${cpim}</span>`:''}
+          ${oth?`<span style="color:var(--muted)">Oth ${oth}</span>`:''}
+        </div>
       </div>`;
     }).join('');
   }
@@ -458,8 +559,10 @@
     activeTab = tab;
     document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
     document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active',p.id==='tab-'+tab));
-    if (tab==='map'&&!mapLoaded) loadMap();
+    if (tab==='map') loadMap();
   }
+  window.App = window.App || {};
+  App.switchToMap = () => switchTab('map');
 
   // ── Countdown ─────────────────────────────────────────────────
   function startCountdown() {

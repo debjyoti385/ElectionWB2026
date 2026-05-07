@@ -211,39 +211,59 @@ window.Charts = (() => {
     });
   }
 
-  // ── Analytics: District Heatmap bar ──────────────────────────
+  // ── Districts Tab: Full stacked bar chart ─────────────────────
   function renderDistrictChart(data) {
     const byDist = {};
     Object.values(data.constituencies||{}).forEach(c => {
       const d = c.district||'Other';
-      if (!byDist[d]) byDist[d] = {BJP:0, AITC:0, other:0};
-      if (c.party==='BJP') byDist[d].BJP++;
-      else if (c.party==='AITC') byDist[d].AITC++;
+      if (!byDist[d]) byDist[d] = {BJP:0, AITC:0, 'CPI(M)':0, AJUP:0, AISF:0, INC:0, other:0};
+      const p = c.party||'';
+      if (p in byDist[d]) byDist[d][p]++;
       else byDist[d].other++;
     });
+    // Sort by total seats descending
     const districts = Object.keys(byDist).sort((a,b) => {
-      const ta = byDist[a].BJP+byDist[a].AITC+byDist[a].other;
-      const tb = byDist[b].BJP+byDist[b].AITC+byDist[b].other;
-      return tb - ta;
+      const sum = o => Object.values(o).reduce((s,v)=>s+v,0);
+      return sum(byDist[b]) - sum(byDist[a]);
     });
     const t = tc();
+    const datasets = [
+      { label:'AITC',    key:'AITC',     color:'#22c55e' },
+      { label:'BJP',     key:'BJP',      color:'#f97316' },
+      { label:'CPI(M)',  key:'CPI(M)',   color:'#dc2626' },
+      { label:'AJUP',   key:'AJUP',    color:'#7c3aed' },
+      { label:'AISF',   key:'AISF',    color:'#0284c7' },
+      { label:'INC',    key:'INC',     color:'#0ea5e9' },
+      { label:'Others', key:'other',   color:'#9ca3af' },
+    ].filter(ds => districts.some(d => byDist[d][ds.key] > 0));
+
     mk('district-chart', {
       type:'bar',
       data: {
         labels: districts,
-        datasets: [
-          { label:'BJP',    data:districts.map(d=>byDist[d].BJP),   backgroundColor:'#f97316cc', borderRadius:3 },
-          { label:'AITC',   data:districts.map(d=>byDist[d].AITC),  backgroundColor:'#22c55ecc', borderRadius:3 },
-          { label:'Others', data:districts.map(d=>byDist[d].other), backgroundColor:'#6b7280cc', borderRadius:3 },
-        ]
+        datasets: datasets.map(ds => ({
+          label: ds.label,
+          data: districts.map(d => byDist[d][ds.key]||0),
+          backgroundColor: ds.color+'cc',
+          borderColor: ds.color,
+          borderWidth: 0,
+          borderRadius: 2,
+        }))
       },
       options: {
         indexAxis:'y', responsive:true, maintainAspectRatio:false,
         scales: {
-          x: { stacked:true, grid:{color: t.grid}, ticks:{color: t.tick, stepSize:5} },
-          y: { stacked:true, grid:{display:false}, ticks:{color: t.tick, font:{size:10}} }
+          x: { stacked:true, grid:{color: t.grid}, ticks:{color: t.tick, stepSize:2} },
+          y: { stacked:true, grid:{display:false}, ticks:{color: t.tick, font:{size:11}} }
         },
-        plugins: { legend:{ position:'top', labels:{color: t.legend, boxWidth:12, padding:10, font:{size:11}} } }
+        plugins: {
+          legend:{ position:'top', labels:{color: t.legend, boxWidth:12, padding:10, font:{size:11}} },
+          tooltip: { callbacks: { afterTitle: items => {
+            const dist = items[0].label;
+            const total = Object.values(byDist[dist]).reduce((s,v)=>s+v,0);
+            return `Total: ${total} constituencies`;
+          }}}
+        }
       }
     });
   }
