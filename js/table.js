@@ -9,11 +9,11 @@ window.ResultsTable = (() => {
   let searchQuery = '';
 
   const DISTRICT_ORDER = [
-    'Cooch Behar','Alipurduar','Jalpaiguri','Kalimpong','Darjeeling',
-    'Uttar Dinajpur','Dakshin Dinajpur','Malda','Murshidabad','Nadia',
-    'North 24 Parganas','South 24 Parganas','Kolkata','Howrah','Hooghly',
-    'Purba Medinipur','Paschim Medinipur','Jhargram','Purulia','Bankura',
-    'Purba Bardhaman','Paschim Bardhaman','Birbhum'
+    'Alipurduar','Bankura','Birbhum','Cooch Behar','Dakshin Dinajpur',
+    'Darjeeling','Hooghly','Howrah','Jalpaiguri','Jhargram','Kalimpong',
+    'Kolkata','Malda','Murshidabad','Nadia','North 24 Parganas',
+    'Paschim Bardhaman','Paschim Medinipur','Purba Bardhaman','Purba Medinipur',
+    'Purulia','South 24 Parganas','Uttar Dinajpur'
   ];
 
   const COLORS = {
