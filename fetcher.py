@@ -60,6 +60,46 @@ PARTY_FULL_NAMES = {
     "IND":    "Independent",
 }
 
+# ── Authoritative AC → District mapping ──────────────────────────────────────
+def _build_district_map():
+    m = {}
+    def rng(a, b, d):
+        for i in range(a, b+1): m[i] = d
+    rng(1,  9,   "Cooch Behar")
+    rng(10, 14,  "Alipurduar")
+    rng(15, 21,  "Jalpaiguri")
+    m[22] = "Kalimpong"
+    rng(23, 27,  "Darjeeling")
+    rng(28, 36,  "Uttar Dinajpur")
+    rng(37, 42,  "Dakshin Dinajpur")
+    rng(43, 54,  "Malda")
+    rng(55, 76,  "Murshidabad")
+    rng(77, 93,  "Nadia")
+    rng(94, 126, "North 24 Parganas")
+    rng(127,148, "South 24 Parganas")
+    m[149]="Kolkata"; m[150]="Kolkata"
+    m[151]="South 24 Parganas"
+    m[152]="Kolkata"; m[153]="Kolkata"; m[154]="Kolkata"
+    m[155]="South 24 Parganas"; m[156]="South 24 Parganas"
+    rng(157,168, "Kolkata")
+    rng(169,184, "Howrah")
+    rng(185,202, "Hooghly")
+    rng(203,218, "Purba Medinipur")
+    m[219]="Paschim Medinipur"
+    m[220]="Jhargram"; m[221]="Jhargram"; m[222]="Jhargram"
+    rng(223,233, "Paschim Medinipur")
+    m[234]="Jhargram"
+    m[235]="Paschim Medinipur"; m[236]="Paschim Medinipur"
+    m[237]="Jhargram"
+    rng(238,246, "Purulia")
+    rng(247,258, "Bankura")
+    rng(259,274, "Purba Bardhaman")
+    rng(275,283, "Paschim Bardhaman")
+    rng(284,294, "Birbhum")
+    return m
+
+AC_DISTRICT_MAP = _build_district_map()
+
 
 # ── HTTP helper ───────────────────────────────────────────────────────────────
 import gzip
@@ -357,6 +397,14 @@ def fetch_all():
                 "round": sw["round"],
                 "status": sw["status"],
             }
+
+    # ── Inject district for every constituency ───────────────────────────────────
+    for ac_str, c in const_data.items():
+        try:
+            ac_int = int(ac_str)
+            c["district"] = AC_DISTRICT_MAP.get(ac_int, "Other")
+        except (ValueError, TypeError):
+            c["district"] = "Other"
 
     # ── Rebuild seat counts from constituencies (more reliable than partywise HTML) ──
     # Reset seat counters so we don't double-count
